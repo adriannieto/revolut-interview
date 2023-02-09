@@ -353,3 +353,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,pycharm+all,git,python,macos,windows
+
+# Junit
+junit

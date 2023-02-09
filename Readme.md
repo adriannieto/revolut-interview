@@ -32,13 +32,13 @@ pip install -r requirements.txt
 pip install -r requeriments_test.txt
 
 # Run unit tests
-pytest
+pytest --junitxml=junit/test-results.xml .
 
 # Run type checks
 mypy .
 
 # Run pylint
-pylint *.py **/*.py
+pylint **/*.py --fail-under=8  
 
 # Start local dynamodb
 docker run --name dynamodb -it -p 8000:8000 amazon/dynamodb-local
