@@ -23,6 +23,8 @@
 In order to run in development mode follow this steps:
 
 ```
+cd ecs/app
+
 pyenv install 3.9.2
 pyenv virtualenv 3.9.16 revolut-interview-ecs-app 
 pyenv activate revolut-interview-ecs-app 
@@ -30,8 +32,8 @@ pip install -r requirements.txt
 pip install -r requeriments_test.txt
 
 # Run unit tests
-python -m unittest discover
-∂
+pytest
+
 # Run type checks
 mypy .
 
