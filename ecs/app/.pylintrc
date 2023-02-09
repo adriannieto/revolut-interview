@@ -1,0 +1,5 @@
+[MASTER]
+ignore-paths=^tests/.*$
+
+[TYPECHECK]
+generated-members=app.logger
