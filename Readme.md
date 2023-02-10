@@ -31,11 +31,11 @@ Another alternative for an API would be to use AWS Lambda, but as we dont have a
 In order to run in development mode follow this steps:
 
 ```
-cd ecs/app
+cd app
 
 pyenv install 3.9.2
-pyenv virtualenv 3.9.16 revolut-interview-ecs-app 
-pyenv activate revolut-interview-ecs-app 
+pyenv virtualenv 3.9.16 revolut-interview-eks-app 
+pyenv activate revolut-interview-eks-app 
 pip install -r requirements.txt
 pip install -r requirements_test.txt
 

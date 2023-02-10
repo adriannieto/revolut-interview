@@ -1,6 +1,10 @@
-name: build-ecs-app
+name: build 
 
 on: [push, pull_request]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 permissions:
   contents: read
@@ -17,13 +21,13 @@ jobs:
         python-version: "3.9"
         cache: 'pip'
     - name: Install dependencies
-      working-directory: ./eks/app
+      working-directory: ./app
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements_test.txt
     - name: Test with pytest
-      working-directory: ./eks/app
+      working-directory: ./app
       run: |
         pytest --junitxml=junit/test-results.xml .        
   
@@ -38,13 +42,13 @@ jobs:
         python-version: "3.9"
         cache: 'pip'
     - name: Install dependencies
-      working-directory: ./eks/app    
+      working-directory: ./app    
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements_test.txt
     - name: Run pylint
-      working-directory: ./eks/app
+      working-directory: ./app
       run: |
         pylint **/*.py --fail-under=8  
 
@@ -59,14 +63,13 @@ jobs:
         python-version: "3.9"
         cache: 'pip'
     - name: Install dependencies
-      working-directory: ./eks/app
+      working-directory: ./app
       run: |
-        cd ecs/app
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements_test.txt
     - name: Run type checks
-      working-directory: ./eks/app
+      working-directory: ./app
       run: |
         mypy .     
 
@@ -78,19 +81,5 @@ jobs:
       - name: Run Docker linter
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: ./eks/app/Dockerfile
-          
-  # No static analysis, it's costly!
-  # sonarcloud:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #     with:
-  #       # Disabling shallow clone is recommended for improving relevancy of reporting
-  #       fetch-depth: 0
-  #   - name: SonarCloud Scan
-  #     uses: sonarsource/sonarcloud-github-action@master
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          dockerfile: ./app/Dockerfile   
 
