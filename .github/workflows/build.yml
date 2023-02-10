@@ -106,6 +106,10 @@ jobs:
 
   docker-security-scan:
     runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -125,5 +129,6 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
+        if: always()
         with:
           sarif_file: 'trivy-results.sarif'
