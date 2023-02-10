@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  IMAGE_TAG: 0.${{ vars.GITHUB_RUN_NUMBER }}-${{ vars.GITHUB_SHA }}
+  IMAGE_TAG: 0.${{github.run_number}}-${{github.sha}}
 
 permissions:
   contents: read
@@ -22,6 +22,9 @@ jobs:
       packages: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+            
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
