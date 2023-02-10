@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  unit-test:
+  python-unit-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +52,7 @@ jobs:
       run: |
         pylint **/*.py --fail-under=8  
 
-  type-checks:
+  python-type-checks:
     runs-on: ubuntu-latest
 
     steps:
@@ -71,7 +71,28 @@ jobs:
     - name: Run type checks
       working-directory: ./app
       run: |
-        mypy .     
+        mypy .
+        
+  python-safety-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+        cache: 'pip'
+    - name: Install dependencies
+      working-directory: ./app
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements_test.txt
+    - name: Run python safety checks
+      working-directory: ./app
+      run: |
+        safety check -r requirements.txt           
 
   docker-lint:
     runs-on: ubuntu-latest
@@ -83,3 +104,26 @@ jobs:
         with:
           dockerfile: ./app/Dockerfile   
 
+  docker-security-scan:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build an image from Dockerfile
+        working-directory: ./app
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
