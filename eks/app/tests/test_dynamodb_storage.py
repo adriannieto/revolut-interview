@@ -1,6 +1,7 @@
 # pylint: disable=missing-class-docstring 
 # pylint: disable=missing-module-docstring 
 # pylint: disable=missing-function-docstring
+import os
 import unittest
 
 import boto3
@@ -10,11 +11,18 @@ from src.exceptions import UserAlreadyExistsException, UserNotFoundException
 
 
 class DynamoDbStorageTestCases(unittest.TestCase):
-
     __TEST_DB_NAME = "test-db"
 
-    def __create_test_db(self):
+    def setUp(self):
+        os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+        os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+        os.environ["AWS_SECURITY_TOKEN"] = "testing"
+        os.environ["AWS_SESSION_TOKEN"] = "testing"
+        os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
         self.__dynamodb =  boto3.resource('dynamodb')
+        
+
+    def __create_test_db(self):
         table = self.__dynamodb.create_table(
             TableName=self.__TEST_DB_NAME,
             KeySchema=[
