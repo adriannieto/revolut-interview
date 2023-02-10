@@ -2,7 +2,7 @@
 
 ## Architecture
 
-### ECS
+### EKS
 
 #### Tradeoffs
 - Application is meant to be simple, even if unit test are added we are not adding type checks and other stuff that could 
