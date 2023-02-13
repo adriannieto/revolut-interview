@@ -2,7 +2,7 @@ resource "aws_kms_key" "key" {
   description             = "alias/${local.resource_name_prefix}-app"
   enable_key_rotation     = true
   deletion_window_in_days = 7
-  policy = <<JSON
+  policy                  = <<JSON
   {
     "Version": "2012-10-17",
     "Id": "key-default-1",
