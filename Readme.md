@@ -10,6 +10,7 @@ Python app:
 - Fancy CICD tools like Sonarqube are not added, as they dont have free-tier for non-open source apps
 - Swagger
 - HTTPS
+- No load test/smoke after deployment
 
 Infrastructure:
 - ECS in favor of EKS
