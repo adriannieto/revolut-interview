@@ -14,7 +14,6 @@ Python app:
 Infrastructure:
 - ECS in favor of EKS
 - ECS autoscaling disabled
-- No nat gateway deployed (this is expensive, and our container are self contained so they does not require vpc access)
 - In general only cloudwatch available logging/monitoring is there, no application level monitoring neither, only containers and infra
 - No ARM support, which would be nice to save costs
 - No terraform modules, infrastructure code is small enough as it is
@@ -23,6 +22,8 @@ Infrastructure:
 
 Misc:
 - No github actions for pre commit validations 
+- Improve github ci pipeline to be more reusable and clear to read, i'm not very used to github (i use gitlab) and it seems the way actions work are quite different in terms of orchestration
+
 
 
 ## Architecture
