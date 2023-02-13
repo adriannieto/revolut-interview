@@ -57,7 +57,7 @@ data "aws_iam_policy_document" "secrets_manager_registry_creds" {
 
     resources = [
       aws_secretsmanager_secret.docker_registry_secret.arn,
-      aws_kms_key.key.key_id
+      aws_kms_key.key.arn
     ]
     effect = "Allow"
   }
