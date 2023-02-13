@@ -32,8 +32,7 @@ jobs:
 
     - name: Format check
       run: terraform fmt -check
-      with:
-        working-directory: ${{ env.TF_ROOT }}   
+      working-directory: ${{ env.TF_ROOT }}   
 
   terraform-lint:
     runs-on: ubuntu-latest
@@ -55,18 +54,15 @@ jobs:
         
     - name: Show version
       run: tflint --version
-      with:
-        working-directory: ${{ env.TF_ROOT }}        
+      working-directory: ${{ env.TF_ROOT }}        
 
     - name: Init TFLint
       run: tflint --init
-      with:
-        working-directory: ${{ env.TF_ROOT }}
+      working-directory: ${{ env.TF_ROOT }}
 
     - name: Run TFLint
       run: tflint -f compact
-      with:
-        working-directory: ${{ env.TF_ROOT }}
+      working-directory: ${{ env.TF_ROOT }}
 
   terraform-validate-and-plan:
     runs-on: ubuntu-latest
@@ -79,19 +75,16 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init    
-      with:
-        working-directory: ${{ env.TF_ROOT }}   
+      working-directory: ${{ env.TF_ROOT }}   
 
     - name: Terraform Validate
       run: terraform validate -no-color
-      with:
-        working-directory: ${{ env.TF_ROOT }}   
+      working-directory: ${{ env.TF_ROOT }}   
       
 
     - name: Terraform plan
       run: terraform plan -no-color -input=false
-      with:
-        working-directory: ${{ env.TF_ROOT }}   
+      working-directory: ${{ env.TF_ROOT }}   
 
   terraform-compute-costs:
     runs-on: ubuntu-latest
