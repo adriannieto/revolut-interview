@@ -74,8 +74,8 @@ resource "aws_ecs_task_definition" "app" {
 
       environment = [
         {
-          name  = "PORT"
-          value = tostring(var.app_ecs_service_port)
+          name  = "RV_ECS_APP_DYNDB_TABLE"
+          value = aws_dynamodb_table.app.name
         }
       ]
 

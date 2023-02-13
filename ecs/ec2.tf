@@ -23,6 +23,8 @@ resource "aws_security_group" "ecs_lb" {
   }
 }
 
+# Allow all traffic to egress
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "ecs_task" {
   name        = "${local.resource_name_prefix}-ecs-task"
   description = "${local.resource_name_prefix}-ecs-task"
@@ -42,7 +44,7 @@ resource "aws_security_group" "ecs_task" {
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
