@@ -1,33 +1,46 @@
 # revolut-interview
 
 #### Tradeoffs
+
 I tried to make a "real app" but given the constrains of the time there are certain things are not being done on purpose:
+
+Python app:
 - Deeper and more tests
 - Authentication (we could add a layer on top with Cognito or similar for fast auth, but internaly would stil remain unauth without code changes)
 - Fancy CICD tools like Sonarqube are not added, as they dont have free-tier for non-open source apps
 - Swagger
 - HTTPS
-- No ARM support, which would be nice to save costs
 
+Infrastructure:
+- ECS in favor of EKS
+- ECS autoscaling disabled
+- No nat gateway deployed (this is expensive, and our container are self contained so they does not require vpc access)
+- In general only cloudwatch available logging/monitoring is there, no application level monitoring neither, only containers and infra
+- No ARM support, which would be nice to save costs
+- No terraform modules, infrastructure code is small enough as it is
+- In-line security groups rules
+- Single terraform state stored in S3, for multiple environments we need to configure multiple states
+
+Misc:
+- No github actions for pre commit validations 
 
 
 ## Architecture
 
-I chose EKS instead of ECS because even if ECS would be simpler and faster to implement I think it's not where market is pushing (k8s instead of propietary implementations), and also comes with a strong vendor locking.
+I chose ECS instead of EKS because complexity and free tier existence for this example. However with a little bit of more time and a demo account provided I would have chosen EKS as it reduces vendor locking and provides more flexbility for future developments in cross cloud environments.
 
 Another alternative for an API would be to use AWS Lambda, but as we dont have any specs on the traffic pattern (critical for Lambda usage due costs) I wouldn't consider it neither, as first I assume the purpose of the test is to prove I can also code some nice Terraform and Lambda would make something like Api Gateway > Lambda > Dynamo.  
-
 
 
 ## Getting started
 
 ### Requeriments
 
-- pyenv https://github.com/pyenv/pyenv
+- pyenv https://github.com/pyenv/pyenv 
+- terraform
+- s3 bucket created in aws to store terraform state
 
-### EKS
-
-#### Development
+### Development
 In order to run in development mode follow this steps:
 
 ```
@@ -55,6 +68,30 @@ docker run --name dynamodb -it -p 8000:8000 amazon/dynamodb-local
 flask --app src/app.py --debug run
 ```
 
-#### Production
+### Deployment
+Deployment of all infrastructure is done by gitlab actions, however if we want to plan locally you will need to setup credentials for this
+
+```
+cd ecs
+
+# Validate current code
+terraform init 
+terraform validate -var-file=prod.tfvars
+
+
+# Run linter
+tflint
+
+# Run security scan
+tfsec
+
+# Format code
+tf fmt
+
+# Review costs for the current plan
+infracost breakdown --path .  --terraform-var-file prod.tfvars
+
+
+```
 
 
