@@ -54,7 +54,6 @@ resource "aws_ecs_service" "app" {
     create_before_destroy = true
   }
 
-
 }
 
 
@@ -71,8 +70,7 @@ resource "aws_ecs_task_definition" "app" {
     {
       name = "app"
 
-      # Dummy image, real one will be provided by gh actions
-      image = "ealen/echo-server"
+      image = var.app_ecs_task_container_image
 
       environment = [
         {
@@ -84,13 +82,6 @@ resource "aws_ecs_task_definition" "app" {
       repositoryCredentials = {
          credentialsParameter = aws_secretsmanager_secret.docker_registry_secret.arn
       }
-
-      # Will be added by gitlab actions task template
-      # repositoryCredentials = {
-      #   credentialsParameter = { 
-      #     "username" : "gitlab-ci-token",
-      #     "password" : "your-password"
-      # }
 
       portMappings = [
         {
@@ -110,9 +101,4 @@ resource "aws_ecs_task_definition" "app" {
     }
 
   ])
-
-  lifecycle {
-    ignore_changes = all
-  }
-
 }
