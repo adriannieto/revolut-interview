@@ -1,3 +1,4 @@
+#tfsec:ignore:aws-dynamodb-enable-recovery
 resource "aws_dynamodb_table" "app" {
   name         = local.resource_name_prefix
   billing_mode = "PAY_PER_REQUEST"

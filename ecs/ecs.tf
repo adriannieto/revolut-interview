@@ -80,7 +80,7 @@ resource "aws_ecs_task_definition" "app" {
       ]
 
       repositoryCredentials = {
-         credentialsParameter = aws_secretsmanager_secret.docker_registry_secret.arn
+        credentialsParameter = aws_secretsmanager_secret.docker_registry_secret.arn
       }
 
       portMappings = [

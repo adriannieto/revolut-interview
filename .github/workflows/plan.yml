@@ -13,10 +13,9 @@ env:
 
   TF_ROOT: ./ecs
   TF_LINT_VERSION: v0.44.1
-
-  TF_VAR_APP_ECS_CONTAINER_IMAGE: "${{ secrets.APP_ECS_CONTAINER_IMAGE }}:${{ github.sha }}"
-  TF_VAR_APP_ECS_CONTAINER_REGISTRY_USERNAME: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_USERNAME }}  
-  TF_VAR_APP_ECS_CONTAINER_REGISTRY_PASSWORD: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_PASSWORD }}  
+  TF_VAR_app_ecs_task_container_image: "${{ secrets.APP_ECS_CONTAINER_IMAGE }}:${{ github.sha }}"
+  TF_VAR_app_ecs_container_registry_username: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_USERNAME }}  
+  TF_VAR_app_ecs_container_registry_password: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_PASSWORD }}  
 
 permissions:
   contents: read
@@ -51,6 +50,7 @@ jobs:
       name: Setup TFLint
       with:
         tflint_version: ${{ env.TF_LINT_VERSION }}
+        github_token:  ${{ secrets.GITHUB_TOKEN }}
         
     - name: Show version
       run: tflint --version
@@ -103,7 +103,6 @@ jobs:
       run:  infracost breakdown --path=${{env.TF_ROOT}}     
 
   terraform-security-review:
-    name: tfsec
     runs-on: ubuntu-latest
 
     steps:
