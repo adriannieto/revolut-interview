@@ -1,0 +1,40 @@
+name: plan 
+run-name: Plan - ${{ github.event.head_commit.message }}
+
+on:
+  workflow_run:
+    workflows: [ build,push,plan ]
+    branches: main
+    types: [ completed ]
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  TF_ROOT: ./ecs
+  TF_VAR_app_ecs_task_container_image: "${{ secrets.APP_ECS_CONTAINER_IMAGE }}:${{ github.sha }}"
+  TF_VAR_app_ecs_container_registry_username: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_USERNAME }}  
+  TF_VAR_app_ecs_container_registry_password: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_PASSWORD }}  
+
+permissions:
+  contents: read
+
+jobs:
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      id: init
+      run: terraform init    
+      working-directory: ${{ env.TF_ROOT }}   
+
+    - name: Terraform plan
+      run: terraform apply -no-color -input=false -auto-approve
+      working-directory: ${{ env.TF_ROOT }}   
