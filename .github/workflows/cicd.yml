@@ -281,7 +281,6 @@ jobs:
     - terraform-validate-and-plan
     - terraform-compute-costs
     - terraform-security-review
-    - terraform-apply
 
     steps:
     - uses: actions/checkout@v3
