@@ -45,8 +45,35 @@ resource "aws_iam_role_policy_attachment" "task_execution_cloudwatch_push_logs" 
   policy_arn = aws_iam_policy.cloudwatch_push_logs.arn
 }
 
-# DynamoDB
+# SSM 
+data "aws_iam_policy_document" "secrets_manager_registry_creds" {
 
+  statement {
+    actions = [
+      "kms:Decrypt",
+      "ssm:GetParameters",
+      "secretsmanager:GetSecretValue"
+    ]
+
+    resources = [ 
+      aws_secretsmanager_secret.docker_registry_secret.arn, 
+      aws_kms_key.key.key_id
+    ]
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_policy" "secrets_manager_registry_creds" {
+  name   = "${local.resource_name_prefix}-ssm-registry-creds"
+  policy = data.aws_iam_policy_document.secrets_manager_registry_creds.json
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_secrets_manager_registry_creds" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.secrets_manager_registry_creds.arn
+}
+
+# DynamoDB
 data "aws_iam_policy_document" "dynamodb_read_table_policy" {
   statement {
     actions = [

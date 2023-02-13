@@ -1,0 +1,109 @@
+name: plan 
+run-name: Plan - ${{ github.event.head_commit.message }}
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  TF_ROOT: ./ecs
+  TF_LINT_VERSION: v0.44.1
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  TF_VAR_APP_ECS_CONTAINER_IMAGE: "${{ secrets.APP_ECS_CONTAINER_IMAGE }}:${{ github.sha }}"
+  TF_VAR_APP_ECS_CONTAINER_REGISTRY_USERNAME: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_USERNAME }}  
+  TF_VAR_APP_ECS_CONTAINER_REGISTRY_PASSWORD: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_PASSWORD }}  
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - uses: hashicorp/setup-terraform@v2
+
+    - name: Format check
+      run: terraform fmt -check
+
+  terraform-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/cache@v3
+
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v3
+      name: Setup TFLint
+      with:
+        tflint_version: ${{ env.TF_LINT_VERSION }}
+
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+
+    - name: Run TFLint
+      run: tflint -f compact
+
+
+  terraform-validate-and-plan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      id: init
+      run: terraform init    
+
+    - name: Terraform Validate
+      run: terraform validate -no-color
+
+    - name: Terraform plan
+      run: terraform plan -no-color -input=false
+
+
+  terraform-compute-costs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Infracost
+      uses: infracost/actions/setup@v2
+      # See https://github.com/infracost/actions/tree/master/setup for other inputs
+      # If you can't use this action, see Docker images in https://infracost.io/cicd
+      with:
+        api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+    - name: Generate Infracost cost estimate baseline
+      run:  infracost breakdown --path=${{env.TF_ROOT}}     
+
+  terraform-security-review:
+    name: tfsec
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working-directory: ${{ env.TF_ROOT }}

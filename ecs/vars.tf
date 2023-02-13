@@ -15,6 +15,7 @@ variable "availability_zones_enabled" {
 
 variable "vpc_cidr" {
   description = "VPC CIDR, we recommend to use greater or equal to /24"
+  type = string
 
   validation {
     condition     = can(cidrhost(var.vpc_cidr, 0))
@@ -68,6 +69,19 @@ variable "app_ecs_service_protocol" {
   }
 }
 
+variable "app_ecs_task_container_image" {
+  description = "ECS task container image"
+  type        = string
+}
 
+variable "app_ecs_container_registry_username" {
+  description = "ECS task container image registry username"
+  type        = string
+  sensitive = true
+}
 
-
+variable "app_ecs_container_registry_password" {
+  description = "ECS task container image registry password"
+  type        = string
+  sensitive = true
+}

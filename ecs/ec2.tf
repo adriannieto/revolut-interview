@@ -19,7 +19,7 @@ resource "aws_security_group" "ecs_lb" {
     protocol    = "tcp"
     from_port   = var.app_ecs_service_port
     to_port     = var.app_ecs_service_port
-    cidr_blocks = aws_subnet.private.*.cidr_block
+    cidr_blocks = aws_subnet.private[*].cidr_block
   }
 }
 
@@ -51,7 +51,7 @@ resource "aws_security_group" "ecs_task" {
 #tfsec:ignore:aws-elb-alb-not-public
 resource "aws_alb" "ecs" {
   name                       = "${local.resource_name_prefix}-ecs"
-  subnets                    = aws_subnet.public.*.id
+  subnets                    = aws_subnet.public[*].id
   security_groups            = [aws_security_group.ecs_lb.id]
   internal                   = false
   drop_invalid_header_fields = true

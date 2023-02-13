@@ -39,8 +39,8 @@ resource "aws_eip" "gw" {
 
 resource "aws_nat_gateway" "gw" {
   count         = var.availability_zones_enabled
-  subnet_id     = element(aws_subnet.public.*.id, count.index)
-  allocation_id = element(aws_eip.gw.*.id, count.index)
+  subnet_id     = element(aws_subnet.public[*].id, count.index)
+  allocation_id = element(aws_eip.gw[*].id, count.index)
 }
 
 resource "aws_route_table" "private" {
@@ -49,12 +49,12 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = element(aws_nat_gateway.gw.*.id, count.index)
+    nat_gateway_id = element(aws_nat_gateway.gw[*].id, count.index)
   }
 }
 
 resource "aws_route_table_association" "private" {
   count          = var.availability_zones_enabled
-  subnet_id      = element(aws_subnet.private.*.id, count.index)
-  route_table_id = element(aws_route_table.private.*.id, count.index)
+  subnet_id      = element(aws_subnet.private[*].id, count.index)
+  route_table_id = element(aws_route_table.private[*].id, count.index)
 }

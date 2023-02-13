@@ -45,14 +45,13 @@ resource "aws_ecs_service" "app" {
   }
 
   network_configuration {
-    subnets          = aws_subnet.private.*.id
+    subnets          = aws_subnet.private[*].id
     security_groups  = [aws_security_group.ecs_task.id]
     assign_public_ip = false
   }
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = ["capacity_provider_strategy"]
   }
 
 
@@ -81,6 +80,10 @@ resource "aws_ecs_task_definition" "app" {
           value = tostring(var.app_ecs_service_port)
         }
       ]
+
+      repositoryCredentials = {
+         credentialsParameter = aws_secretsmanager_secret.docker_registry_secret.arn
+      }
 
       # Will be added by gitlab actions task template
       # repositoryCredentials = {
