@@ -4,6 +4,9 @@ data "aws_availability_zones" "available" {
 
 #tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "main" {
+  tags = {
+    Name = local.resource_name_prefix
+  }
   cidr_block = var.vpc_cidr
 }
 
@@ -39,6 +42,10 @@ resource "aws_eip" "gw" {
 }
 
 resource "aws_nat_gateway" "gw" {
+  depends_on = [
+    aws_internet_gateway.gw,
+  ]
+
   count         = var.availability_zones_enabled
   subnet_id     = element(aws_subnet.public[*].id, count.index)
   allocation_id = element(aws_eip.gw[*].id, count.index)

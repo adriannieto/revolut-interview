@@ -1,11 +1,15 @@
-name: deploy 
-run-name: Deploy - ${{ github.event.head_commit.message }}
+name: cd 
+run-name: CD - ${{ github.event.head_commit.message }}
 
 on:
   workflow_run:
-    workflows: [ build,push,plan ]
+    workflows: [ ci ]
     branches: main
     types: [ completed ]
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -13,6 +17,8 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   TF_ROOT: ./ecs
+  TF_LINT_VERSION: v0.44.1
+
   TF_VAR_app_ecs_task_container_image: "${{ secrets.APP_ECS_CONTAINER_IMAGE }}:${{ github.sha }}"
   TF_VAR_app_ecs_container_registry_username: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_USERNAME }}  
   TF_VAR_app_ecs_container_registry_password: ${{ secrets.APP_ECS_CONTAINER_REGISTRY_PASSWORD }}  
