@@ -292,6 +292,6 @@ jobs:
       run: terraform init    
       working-directory: ${{ env.TF_ROOT }}   
 
-    - name: Terraform plan
+    - name: Terraform apply
       run: terraform apply -no-color -input=false -auto-approve
       working-directory: ${{ env.TF_ROOT }}   
