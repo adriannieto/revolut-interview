@@ -49,11 +49,6 @@ resource "aws_ecs_service" "app" {
     security_groups  = [aws_security_group.ecs_task.id]
     assign_public_ip = false
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
 }
 
 
@@ -89,6 +84,14 @@ resource "aws_ecs_task_definition" "app" {
           hostPort      = var.app_ecs_service_port
         }
       ]
+
+      healthCheck = {
+        retries     = 10
+        command     = ["CMD /usr/bin/wget --quiet --tries=1 --spider http://127.0.0.1:8000/health"]
+        timeout     = 5
+        interval    = 10
+        startPeriod = 5
+      }
 
       logConfiguration = {
         logDriver = "awslogs",
