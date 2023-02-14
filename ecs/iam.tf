@@ -74,15 +74,34 @@ resource "aws_iam_role_policy_attachment" "task_execution_secrets_manager_regist
 }
 
 # DynamoDB
+#tfsec:ignore:aws-iam-no-policy-wildcards
 data "aws_iam_policy_document" "dynamodb_read_table_policy" {
   statement {
     actions = [
+      "dynamodb:List*",
+      "dynamodb:DescribeReservedCapacity*",
+      "dynamodb:DescribeLimits",
+      "dynamodb:DescribeTimeToLive"
+    ]
+
+    resources = ["*"]
+
+    effect = "Allow"
+  }
+
+  statement {
+    actions = [
+      "dynamodb:BatchGet*",
+      "dynamodb:DescribeStream",
       "dynamodb:DescribeTable",
-      "dynamodb:GetItem",
-      "dynamodb:GetRecords",
-      "dynamodb:ListTables",
+      "dynamodb:Get*",
       "dynamodb:Query",
       "dynamodb:Scan",
+      "dynamodb:BatchWrite*",
+      "dynamodb:CreateTable",
+      "dynamodb:Delete*",
+      "dynamodb:Update*",
+      "dynamodb:PutItem"
     ]
 
     resources = [aws_dynamodb_table.app.arn]
