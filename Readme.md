@@ -2,9 +2,6 @@
 
 #### Tradeoffs
 
-
-
-
 I tried to make a "real app" but given the constrains of the time there are certain things are not being done on purpose:
 
 Python app:
@@ -38,6 +35,7 @@ Misc:
 ### Requeriments
 
 - pyenv https://github.com/pyenv/pyenv 
+- docker
 - terraform
 - s3 bucket created in aws to store terraform state
 
@@ -47,14 +45,14 @@ In order to run in development mode follow this steps:
 ```
 cd app
 
-pyenv install 3.9.2
-pyenv virtualenv 3.9.16 revolut-interview-eks-app 
-pyenv activate revolut-interview-eks-app 
+pyenv install 3.9.16
+pyenv virtualenv 3.9.16 revolut-interview-app 
+pyenv activate revolut-interview-app 
 pip install -r requirements.txt
 pip install -r requirements_test.txt
 
 # Run unit tests
-pytest --junitxml=junit/test-results.xml .
+pytest 
 
 # Run type checks
 mypy .
@@ -75,10 +73,11 @@ Deployment of all infrastructure is done by gitlab actions, however if we want t
 ```
 cd ecs
 
-# Validate current code
+# Init
 terraform init 
-terraform validate -var-file=prod.tfvars
 
+# Validate syntax
+terraform validate 
 
 # Run linter
 tflint
@@ -90,9 +89,9 @@ tfsec
 tf fmt
 
 # Review costs for the current plan
-infracost breakdown --path .  --terraform-var-file prod.tfvars
+infracost breakdown --path . 
 
-
+tf plan
 ```
 
 

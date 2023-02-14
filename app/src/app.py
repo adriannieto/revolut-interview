@@ -1,3 +1,4 @@
+import os
 import traceback
 
 from flask import Flask, escape, jsonify, request
@@ -10,9 +11,8 @@ from user import User
 
 app = Flask(__name__)
 
-RV_ECS_APP_DYNDB_TABLE = app.config["RV_ECS_APP_DYNDB_TABLE"] if app.config.from_envvar('RV_ECS_APP_DYNDB_TABLE', silent=True) else "revolut_interview"
-RV_ECS_APP_FORCE_LOCAL_MODE = app.config["RV_ECS_APP_FORCE_LOCAL_MODE"] if app.config.from_envvar('RV_ECS_APP_FORCE_LOCAL_MODE', silent=True) else app.debug
-
+RV_ECS_APP_DYNDB_TABLE = os.getenv('RV_ECS_APP_DYNDB_TABLE', "revolut_interview")
+RV_ECS_APP_FORCE_LOCAL_MODE = os.getenv('RV_ECS_APP_FORCE_LOCAL_MODE', app.debug)
 persistence = DynamoDbStorage(RV_ECS_APP_DYNDB_TABLE, app.debug)
 
 @app.route("/", methods=["GET"])
