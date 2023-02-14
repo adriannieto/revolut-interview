@@ -12,8 +12,9 @@ from user import User
 app = Flask(__name__)
 
 RV_ECS_APP_DYNDB_TABLE = os.getenv('RV_ECS_APP_DYNDB_TABLE', "revolut_interview")
-RV_ECS_APP_FORCE_LOCAL_MODE = os.getenv('RV_ECS_APP_FORCE_LOCAL_MODE', app.debug)
-persistence = DynamoDbStorage(RV_ECS_APP_DYNDB_TABLE, app.debug)
+RV_ECS_APP_FORCE_LOCAL_MODE = os.getenv('RV_ECS_APP_FORCE_LOCAL_MODE', str(app.debug)) == "True"
+
+persistence = DynamoDbStorage(RV_ECS_APP_DYNDB_TABLE, RV_ECS_APP_FORCE_LOCAL_MODE)
 
 @app.route("/", methods=["GET"])
 def root():

@@ -22,12 +22,9 @@ Infrastructure:
 Misc:
 - No pre-commits validation 
 - Potentially application deployment would be managed outside gitlab, left as it is for simpicity
+- Modules for terraform missing, I know they need to be added, but at the end if I was going to use modules I would have used prebuilt ones, making the exercice to show my terraform skills useles...
 - With more time I would have split Github Actions into several workflows so main one only calls the children ones
 - Secrets store is in github, I personally would chose another tool like HS Vault
-
-
-## Architecture
-
 
 
 ## Getting started
