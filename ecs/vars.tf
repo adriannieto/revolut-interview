@@ -69,6 +69,12 @@ variable "app_ecs_service_protocol" {
   }
 }
 
+variable "app_ecs_service_replicas" {
+  description = "ECS Service desired count"
+  type        = number
+}
+
+
 variable "app_ecs_task_container_image" {
   description = "ECS task container image"
   type        = string

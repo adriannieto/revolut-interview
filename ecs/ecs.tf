@@ -33,14 +33,15 @@ resource "aws_ecs_cluster_capacity_providers" "cluster" {
 }
 
 resource "aws_ecs_service" "app" {
-  name            = local.resource_name_prefix
-  cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = 1
+  name                  = local.resource_name_prefix
+  cluster               = aws_ecs_cluster.cluster.id
+  task_definition       = aws_ecs_task_definition.app.arn
+  desired_count         = var.app_ecs_service_replicas
+  wait_for_steady_state = true
 
   load_balancer {
     target_group_arn = aws_alb_target_group.app.arn
-    container_name   = "app"
+    container_name   = var.app_ecs_task_container_name
     container_port   = var.app_ecs_service_port
   }
 
@@ -53,7 +54,7 @@ resource "aws_ecs_service" "app" {
 
 
 resource "aws_ecs_task_definition" "app" {
-  family                   = "app"
+  family                   = local.resource_name_prefix
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   task_role_arn            = aws_iam_role.ecs_task_role.arn
@@ -63,8 +64,7 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([
     {
-      name = "app"
-
+      name  = var.app_name
       image = var.app_ecs_task_container_image
 
       environment = [

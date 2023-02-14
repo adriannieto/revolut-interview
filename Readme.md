@@ -2,6 +2,9 @@
 
 #### Tradeoffs
 
+
+
+
 I tried to make a "real app" but given the constrains of the time there are certain things are not being done on purpose:
 
 Python app:
@@ -13,25 +16,21 @@ Python app:
 - No load test/smoke after deployment
 
 Infrastructure:
-- ECS in favor of EKS
-- ECS autoscaling disabled
+- ECS in favor of EKS. I chose ECS instead of EKS because complexity and free tier existence for this example. However with a little bit of more time and a demo account provided I would have chosen EKS as it's more flexible, support multiples cloud providers and it's way more standard. Another alternative for an API would be to use AWS Lambda, but as we dont have any specs on the traffic pattern (critical for Lambda usage due costs) I wouldn't consider it neither, as first I assume the purpose of the test is to prove I can also code some nice Terraform and Lambda would make something like Api Gateway > Lambda > Dynamo.  
 - In general only cloudwatch available logging/monitoring is there, no application level monitoring neither, only containers and infra
-- No ARM support, which would be nice to save costs
 - No terraform modules, infrastructure code is small enough as it is
-- In-line security groups rules
-- Single terraform state stored in S3, for multiple environments we need to configure multiple states
+- In-line security groups rules, needs to be independent resources if bigger or pluggable config is in place
+- Single terraform state stored in S3, for multiple environments we need to configure multiple states stored in different buckets or another state store provider
 
 Misc:
-- No github actions for pre commit validations 
-- Improve github ci pipeline to be more reusable and clear to read, i'm not very used to github (i use gitlab) and it seems the way actions work are quite different in terms of orchestration
-
+- No pre-commits validation 
+- Potentially application deployment would be managed outside gitlab, left as it is for simpicity
+- With more time I would have split Github Actions into several workflows so main one only calls the children ones
+- Secrets store is in github, I personally would chose another tool like HS Vault
 
 
 ## Architecture
 
-I chose ECS instead of EKS because complexity and free tier existence for this example. However with a little bit of more time and a demo account provided I would have chosen EKS as it reduces vendor locking and provides more flexbility for future developments in cross cloud environments.
-
-Another alternative for an API would be to use AWS Lambda, but as we dont have any specs on the traffic pattern (critical for Lambda usage due costs) I wouldn't consider it neither, as first I assume the purpose of the test is to prove I can also code some nice Terraform and Lambda would make something like Api Gateway > Lambda > Dynamo.  
 
 
 ## Getting started
